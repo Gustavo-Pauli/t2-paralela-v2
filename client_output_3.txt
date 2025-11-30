@@ -1,1 +1,0 @@
-bash: ython.exe: command not found
