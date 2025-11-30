@@ -1,30 +1,34 @@
 import requests
 import concurrent.futures
 from flask import Flask, jsonify
+import sys
 
 app = Flask(__name__)
 
-QUOTE_SERVICE_URL = "http://localhost:5003"
-SHARD_ROUTER_URL = "http://localhost:5010"
+# Use 127.0.0.1 to avoid potential localhost resolution issues on Windows
+QUOTE_SERVICE_URL = "http://127.0.0.1:5003"
+SHARD_ROUTER_URL = "http://127.0.0.1:5010"
 
 def fetch_quote(symbol):
     try:
-        # Increased timeout to 5 seconds to avoid premature timeouts during high load or cold starts
-        resp = requests.get(f"{QUOTE_SERVICE_URL}/quote/{symbol}", timeout=5)
+        print(f"Fetching quote for {symbol} from {QUOTE_SERVICE_URL}...", file=sys.stderr)
+        resp = requests.get(f"{QUOTE_SERVICE_URL}/quote/{symbol}", timeout=2)
+        print(f"Quote response: {resp.status_code}", file=sys.stderr)
         if resp.status_code == 200:
             return resp.json()
     except Exception as e:
-        print(f"Quote fetch failed: {e}")
+        print(f"Quote fetch failed: {e}", file=sys.stderr)
     return {"error": "Quote unavailable"}
 
 def fetch_history(symbol):
     try:
-        # Increased timeout to 5 seconds
-        resp = requests.get(f"{SHARD_ROUTER_URL}/transactions/{symbol}?limit=10", timeout=5)
+        print(f"Fetching history for {symbol} from {SHARD_ROUTER_URL}...", file=sys.stderr)
+        resp = requests.get(f"{SHARD_ROUTER_URL}/transactions/{symbol}?limit=10", timeout=2)
+        print(f"History response: {resp.status_code}", file=sys.stderr)
         if resp.status_code == 200:
             return resp.json()
     except Exception as e:
-        print(f"History fetch failed: {e}")
+        print(f"History fetch failed: {e}", file=sys.stderr)
     return []
 
 @app.route('/combined/<symbol>', methods=['GET'])
@@ -45,4 +49,5 @@ def get_combined_data(symbol):
     })
 
 if __name__ == '__main__':
-    app.run(port=5020, debug=True)
+    print("Starting Fixed Aggregator on 5021...", file=sys.stderr)
+    app.run(port=5021, debug=True)

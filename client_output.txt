@@ -1,0 +1,8 @@
+[CLIENT] Listening on port 6000...
+ * Serving Flask app 'client_simulator'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on http://127.0.0.1:6000
+Press CTRL+C to quit
+[CLIENT] Subscribing to AAPL...
+[CLIENT] Subscription response: {'callback_url': 'http://localhost:6000/callback', 'status': 'subscribed', 'topic': 'AAPL'}
